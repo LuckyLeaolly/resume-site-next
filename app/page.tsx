@@ -107,14 +107,19 @@ export default function HomePage() {
   }, []);
 
   const content = useMemo(() => contentMap[language] ?? defaultContent[language], [contentMap, language]);
+  const businessShowcase = content.businessShowcase ?? defaultContent[language].businessShowcase;
   const frontendShowcase = content.frontendShowcase ?? defaultContent[language].frontendShowcase;
+  const hasBusinessNav = content.nav.some((item) => item.href.startsWith("#business"));
   const hasFrontendNav = content.nav.some((item) => item.href.startsWith("#front"));
-  const navItems: Array<{ href: string; label: string }> = hasFrontendNav
-    ? content.nav.map((item) => ({ href: item.href, label: item.label }))
-    : [
-        ...content.nav.map((item) => ({ href: item.href, label: item.label })),
-        { href: "#frontend", label: language === "zh" ? "前端力" : "Frontend" },
-      ];
+  const navItems: Array<{ href: string; label: string }> = content.nav.map((item) => ({ href: item.href, label: item.label }));
+
+  if (!hasBusinessNav) {
+    navItems.push({ href: "#business", label: language === "zh" ? "业务力" : "Business" });
+  }
+
+  if (!hasFrontendNav) {
+    navItems.push({ href: "#frontend", label: language === "zh" ? "前端力" : "Frontend" });
+  }
 
   const trackLabels = projectTrackLabels[language];
   const trackOptions = useMemo(() => {
@@ -339,6 +344,67 @@ export default function HomePage() {
                 <p>{achievement.detail}</p>
               </article>
             ))}
+          </div>
+        </section>
+
+        <section className="section business-section" id="business">
+          <SectionHead
+            eyebrow={businessShowcase.eyebrow}
+            title={businessShowcase.title}
+            description={businessShowcase.description}
+          />
+
+          <div className="business-anchor-grid">
+            {businessShowcase.anchors.map((anchor) => (
+              <article className="business-anchor panel" key={anchor.label}>
+                <span>{anchor.label}</span>
+                <strong>{anchor.value}</strong>
+                <p>{anchor.detail}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="business-workbench">
+            <article className="business-playbook panel">
+              <h3>{businessShowcase.playbookTitle}</h3>
+              <div className="business-playbook-list">
+                {businessShowcase.playbook.map((step) => (
+                  <article className="business-step" key={step.title}>
+                    <div>
+                      <h4>{step.title}</h4>
+                      <p>{step.description}</p>
+                    </div>
+                    <span>{step.outcome}</span>
+                  </article>
+                ))}
+              </div>
+            </article>
+
+            <article className="business-cases panel-soft">
+              <h3>{businessShowcase.casesTitle}</h3>
+              <div className="business-case-list">
+                {businessShowcase.cases.map((caseItem) => (
+                  <article className="business-case" key={caseItem.scenario}>
+                    <header>
+                      <strong>{caseItem.scenario}</strong>
+                      <span>{caseItem.metric}</span>
+                    </header>
+                    <p>
+                      <b>{language === "zh" ? "问题" : "Challenge"}：</b>
+                      {caseItem.challenge}
+                    </p>
+                    <p>
+                      <b>{language === "zh" ? "决策" : "Decision"}：</b>
+                      {caseItem.decision}
+                    </p>
+                    <p>
+                      <b>{language === "zh" ? "结果" : "Result"}：</b>
+                      {caseItem.result}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </article>
           </div>
         </section>
 

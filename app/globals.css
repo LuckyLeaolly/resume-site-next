@@ -492,6 +492,144 @@ select {
   font-size: 13px;
 }
 
+.business-section {
+  position: relative;
+}
+
+.business-anchor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.business-anchor {
+  border-radius: var(--radius);
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+}
+
+.business-anchor span {
+  color: var(--text-muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.business-anchor strong {
+  font-size: 30px;
+  line-height: 1;
+  color: var(--brand-strong);
+}
+
+.business-anchor p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.business-workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 12px;
+}
+
+.business-playbook,
+.business-cases {
+  border-radius: var(--radius);
+  padding: 20px;
+  display: grid;
+  gap: 12px;
+}
+
+.business-playbook h3,
+.business-cases h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.business-playbook-list,
+.business-case-list {
+  display: grid;
+  gap: 10px;
+}
+
+.business-step {
+  border-radius: 14px;
+  border: 1px solid var(--line-soft);
+  background: rgba(255, 255, 255, 0.88);
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.business-step h4 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.business-step p {
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.business-step span {
+  width: fit-content;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(49, 185, 170, 0.34);
+  background: rgba(49, 185, 170, 0.12);
+  color: #1f6d63;
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+}
+
+.business-case {
+  border-radius: 14px;
+  border: 1px solid var(--line-soft);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.business-case header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.business-case strong {
+  font-size: 15px;
+}
+
+.business-case header span {
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(63, 102, 218, 0.3);
+  color: var(--brand-strong);
+  background: rgba(63, 102, 218, 0.12);
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+}
+
+.business-case p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.business-case b {
+  color: #273b76;
+}
+
 .capability-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -1246,6 +1384,10 @@ select {
   .hero {
     grid-template-columns: 1fr;
     padding: 28px;
+  }
+
+  .business-workbench {
+    grid-template-columns: 1fr;
   }
 
   .process-grid {

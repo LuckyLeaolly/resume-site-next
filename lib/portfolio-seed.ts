@@ -107,6 +107,70 @@ export const portfolioSeed = {
         detail: "落地设计 Token、组件规范和页面模板，统一视觉语言并减少跨项目重复建设。",
       },
     ],
+    businessShowcase: {
+      eyebrow: "BUSINESS IMPACT",
+      title: "业务问题解决能力",
+      description: "用“问题定义—决策路径—结果验证”的方式推动复杂业务落地，持续交付可量化价值。",
+      anchors: [
+        {
+          label: "需求到上线周期",
+          value: "-35%",
+          detail: "通过模板化拆解与优先级机制，压缩跨团队等待时间。",
+        },
+        {
+          label: "关键流程稳定性",
+          value: "99.9%",
+          detail: "将异常分级、灰度策略与回滚预案纳入标准发布流。",
+        },
+        {
+          label: "跨团队协同效率",
+          value: "+40%",
+          detail: "统一评审与交付语言，降低沟通损耗与返工率。",
+        },
+      ],
+      playbookTitle: "业务推进方法",
+      playbook: [
+        {
+          title: "1. 锁定关键业务问题",
+          description: "先识别影响营收、转化或效率的关键瓶颈，明确优先级和边界。",
+          outcome: "目标一致，避免资源分散",
+        },
+        {
+          title: "2. 建立可执行方案",
+          description: "把业务目标拆成可交付模块，定义里程碑、风险清单和依赖关系。",
+          outcome: "方案可落地，节奏可预测",
+        },
+        {
+          title: "3. 按指标闭环迭代",
+          description: "上线后跟踪核心指标与用户反馈，按证据持续优化而非拍脑袋。",
+          outcome: "价值可验证，可持续增长",
+        },
+      ],
+      casesTitle: "业务案例拆解",
+      cases: [
+        {
+          scenario: "活动页大促转化波动",
+          metric: "转化率 +22%",
+          challenge: "活动配置频繁变更，页面稳定性不足，导致转化链路中断。",
+          decision: "重构活动模板和配置协议，关键链路加入降级兜底与实时监控。",
+          result: "大促期间链路稳定运行，转化提升且故障处理时长明显下降。",
+        },
+        {
+          scenario: "中后台交付效率低",
+          metric: "上线周期 -30%",
+          challenge: "需求反复、模块耦合重，版本延期成为常态。",
+          decision: "建立组件复用清单与交付准入机制，按业务域拆分模块边界。",
+          result: "版本节奏稳定，跨团队协作成本下降，迭代吞吐明显提升。",
+        },
+        {
+          scenario: "运营看板决策滞后",
+          metric: "响应速度 +45%",
+          challenge: "指标分散在多个系统，异常发现和定位依赖人工串联。",
+          decision: "统一监控视图与告警分级，打通实时数据流和处置路径。",
+          result: "运营团队可实时定位问题，决策响应速度和准确性同步提升。",
+        },
+      ],
+    },
     capabilities: [
       {
         title: "产品体验与交互设计落地",
@@ -492,6 +556,71 @@ export const portfolioSeed = {
         detail: "Built tokens, component rules, and page templates to unify language and reduce repeated implementation.",
       },
     ],
+    businessShowcase: {
+      eyebrow: "BUSINESS IMPACT",
+      title: "Business Problem-Solving Capability",
+      description:
+        "I drive complex initiatives through a clear loop of problem framing, decision making, and measurable results.",
+      anchors: [
+        {
+          label: "Lead Time to Release",
+          value: "-35%",
+          detail: "Requirement templates and priority discipline reduced cross-team waiting time.",
+        },
+        {
+          label: "Core Flow Reliability",
+          value: "99.9%",
+          detail: "Release governance includes error tiers, canary rollout, and rollback playbooks.",
+        },
+        {
+          label: "Cross-team Efficiency",
+          value: "+40%",
+          detail: "Unified planning language lowered communication overhead and rework.",
+        },
+      ],
+      playbookTitle: "Execution Playbook",
+      playbook: [
+        {
+          title: "1. Frame the Core Business Problem",
+          description: "Identify the highest-impact bottlenecks for growth, conversion, or operational efficiency.",
+          outcome: "Aligned goals, focused investments",
+        },
+        {
+          title: "2. Turn Strategy into Executable Plan",
+          description: "Break goals into deliverable modules with milestones, dependency mapping, and risk controls.",
+          outcome: "Predictable delivery cadence",
+        },
+        {
+          title: "3. Close the Loop with Metrics",
+          description: "Validate impact post-release and iterate based on evidence, not intuition.",
+          outcome: "Sustained, measurable outcomes",
+        },
+      ],
+      casesTitle: "Business Case Breakdowns",
+      cases: [
+        {
+          scenario: "Campaign Conversion Volatility",
+          metric: "Conversion +22%",
+          challenge: "Frequent campaign updates caused unstable pages and broken conversion paths.",
+          decision: "Rebuilt campaign templates and config contracts, with runtime fallback and live monitoring.",
+          result: "Conversion flow stayed stable during traffic peaks and incident handling time dropped significantly.",
+        },
+        {
+          scenario: "Low Backoffice Delivery Throughput",
+          metric: "Lead Time -30%",
+          challenge: "Repeated requirement churn and tightly coupled modules slowed releases.",
+          decision: "Introduced reusable component catalog and release entry criteria with domain-based boundaries.",
+          result: "Version cadence stabilized and cross-team collaboration cost reduced with higher throughput.",
+        },
+        {
+          scenario: "Delayed Operational Decisions",
+          metric: "Response +45%",
+          challenge: "Metrics were scattered across systems, and incident diagnosis relied on manual stitching.",
+          decision: "Unified monitoring views and alert tiers with realtime data channels and response workflows.",
+          result: "Ops teams identified issues faster with stronger decision speed and accuracy.",
+        },
+      ],
+    },
     capabilities: [
       {
         title: "Product UX Execution",
