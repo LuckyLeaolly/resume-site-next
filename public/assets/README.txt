@@ -1,1 +1,1 @@
-Place your PDF resume here as "LiHui-Resume.pdf".
+Keep static assets for the portfolio site in this folder.

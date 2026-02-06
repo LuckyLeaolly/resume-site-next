@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
+    "clean:next": "node -e \"require('node:fs').rmSync('.next',{recursive:true,force:true});console.log('Cleaned .next cache')\"",
+    "predev": "npm run clean:next",
+    "prebuild": "npm run clean:next",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

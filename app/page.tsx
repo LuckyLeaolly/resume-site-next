@@ -1,668 +1,663 @@
 "use client";
 
-import { useState } from "react";
+import type { CSSProperties, MouseEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import { portfolioSeed } from "../lib/portfolio-seed";
 
 type Language = "zh" | "en";
+type SiteCopy = (typeof portfolioSeed)[Language];
+type SectionCopy = { eyebrow: string; title: string; description: string };
+type ProjectItem = SiteCopy["projects"][number];
+type ProjectTrackKey = "all" | "vue" | "react" | "next" | "realtime";
 
-const content = {
+const defaultContent = portfolioSeed as Record<Language, SiteCopy>;
+
+const projectTrackLabels: Record<Language, Record<ProjectTrackKey, string>> = {
   zh: {
-    brandName: "李慧",
-    brandRole: "前端开发工程师",
-    nav: {
-      about: "关于",
-      skills: "能力",
-      experience: "经历",
-      projects: "项目",
-      education: "教育",
-      contact: "联系",
-    },
-    hero: {
-      label: "简历概览",
-      title: "前端开发工程师",
-      lead:
-        "8年工作经验，深耕教育、电商、O2O等领域，擅长性能优化、模块化开发与跨端适配，能高效协作推进复杂系统落地。",
-      actions: {
-        primary: "查看项目",
-        secondary: "联系我",
-      },
-      badges: ["Vue / React", "性能优化", "工程化", "跨端开发"],
-    },
-    profile: {
-      focusLabel: "经验",
-      focusValue: "8年",
-      locationLabel: "意向",
-      locationValue: "前端开发工程师",
-      availabilityLabel: "年龄",
-      availabilityValue: "29岁",
-      languagesLabel: "电话",
-      languagesValue: "19318638996",
-    },
-    status: {
-      title: "专长方向",
-      items: [
-        { label: "性能优化", value: "首屏 / 渲染" },
-        { label: "模块化", value: "组件复用" },
-        { label: "跨端适配", value: "Web / 小程序" },
-      ],
-    },
-    sections: {
-      skills: {
-        eyebrow: "能力",
-        title: "专业技能与技术栈",
-        desc: "覆盖前端基础、框架组件、工程化与跨端能力，具备大型系统的交付经验。",
-      },
-      experience: {
-        eyebrow: "经历",
-        title: "工作经历",
-        desc: "从中后台系统到 C 端业务，参与多条业务线的架构升级与性能优化。",
-      },
-      projects: {
-        eyebrow: "项目",
-        title: "重点项目",
-        desc: "覆盖教育平台、电商系统、协同工具与企业级后台。",
-      },
-      education: {
-        eyebrow: "教育",
-        title: "教育经历",
-        desc: "兼顾计算机应用与管理专业背景。",
-      },
-      contact: {
-        eyebrow: "联系",
-        title: "联系方式",
-        desc: "欢迎联系沟通前端岗位或项目合作。",
-      },
-    },
-    projectMeta: {
-      roleLabel: "角色",
-      stackLabel: "技术栈",
-      focusLabel: "方向",
-    },
-    skills: [
-      {
-        title: "语言与基础",
-        items: ["HTML5 / CSS3", "JavaScript", "ES6+", "TypeScript", "GitFlow"],
-      },
-      {
-        title: "框架与组件",
-        items: ["Vue / Vuex / Pinia", "React / Redux", "Ant Design / Element UI", "Vant / Arco / MUI"],
-      },
-      {
-        title: "工程化与性能",
-        items: ["Webpack", "Vite", "Rollup", "CI/CD", "性能优化", "前端监控"],
-      },
-      {
-        title: "跨端与平台",
-        items: ["uni-app", "Taro", "小程序", "Electron", "Node.js", "Docker"],
-      },
-    ],
-    experiences: [
-      {
-        title: "前端开发工程师（前端组长）",
-        company: "上海博为峰软件技术股份有限公司",
-        period: "2021.02-2025.09",
-        highlight:
-          "主导教育平台前端架构升级与性能优化，模块化拆分提升维护性，引入 Webpack/Vite 与 CDN 优化，资源消耗降低 70%。",
-      },
-      {
-        title: "前端开发工程师",
-        company: "上海费芮网络科技有限公司",
-        period: "2019.03-2021.01",
-        highlight:
-          "负责项目全周期交付与组件库维护，推动脚手架与构建优化落地，制定代码规范提升交付一致性与效率。",
-      },
-      {
-        title: "前端开发工程师",
-        company: "蓝色起源企业管理（上海）有限公司",
-        period: "2018.03-2019.03",
-        highlight:
-          "主导多类型定制项目的前端落地，负责技术选型与核心功能实现，强化跨团队协作与需求转化能力。",
-      },
-    ],
-    projects: [
-      {
-        title: "学掌门网校 PC Web 商城 & APP 商城",
-        year: "2021.02-2025.09",
-        role: "前端开发工程师",
-        stack: "uni-app, Nuxt2, Vue2, Element UI, Node.js, Koa",
-        focus: "教育电商、直播互动、支付体系",
-        highlights: [
-          "覆盖课程、会员、答题、支付等核心模块，支撑万级用户同时在线。",
-          "对接微信/支付宝支付与 JWT 鉴权，提升交易稳定性与安全性。",
-          "构建预渲染与缓存体系，SSR 冷启动耗时降低 84%。",
-        ],
-        impact: "平台活跃度与付费转化率持续提升。",
-      },
-      {
-        title: "学掌门网校商城后台管理",
-        year: "2021.02-2025.09",
-        role: "前端开发工程师",
-        stack: "React 18, Redux Toolkit, Webpack 5, Ant Design, Echarts",
-        focus: "B 端系统、配置化表单、性能优化",
-        highlights: [
-          "二次封装动态表单，覆盖 15+ 业务场景快速配置。",
-          "建设通用业务组件库，开发周期缩短约 30%。",
-          "引入 Web Worker 与 ResizeObserver，提升大数据量交互体验。",
-        ],
-        impact: "首屏加载时间优化至 1.8s。",
-      },
-      {
-        title: "统一认证中心 UAC",
-        year: "2022.03-2025.09",
-        role: "前端开发工程师",
-        stack: "React, Umi Max, Ant Design, Tailwind CSS, Node.js",
-        focus: "权限管理、脚手架、代码生成",
-        highlights: [
-          "基于 Commander/Inquirer 开发 CLI，支持交互式项目创建。",
-          "引入 Swagger 接口代码生成，缩短 CRUD 开发周期。",
-          "编写最佳实践文档，新项目启动时间缩短至 2 小时。",
-        ],
-        impact: "多业务线复用统一认证能力。",
-      },
-      {
-        title: "博为峰 TMS 系统",
-        year: "2021.07-2025.09",
-        role: "前端开发工程师",
-        stack: "React 18, TypeScript, RTK Query, Ant Design, Socket.IO, Yjs",
-        focus: "团队协作、实时编辑、监控体系",
-        highlights: [
-          "实现频道协作、Markdown 输入与消息管理等核心功能。",
-          "基于 Socket.IO + Yjs 实现多人实时协作编辑。",
-          "对接 Performance API 上报性能与错误日志。",
-        ],
-        impact: "提升团队协作效率与可追踪性。",
-      },
-      {
-        title: "雅菲妮外贸 ERP 产品系统",
-        year: "2019.03-2021.01",
-        role: "前端开发工程师",
-        stack: "Vue 3, Element Plus, Pinia, Vite, WebSocket",
-        focus: "复杂业务模块与性能优化",
-        highlights: [
-          "引入虚拟滚动与分片加载，实现万级 SKU 秒级渲染。",
-          "构建财务结算中心并完成多币种实时换算。",
-          "建设前端监控与埋点体系，故障响应提升 80%。",
-        ],
-        impact: "平台响应速度提升 30%。",
-      },
-    ],
-    education: [
-      {
-        school: "江西水利职业学院",
-        degree: "大专 · 计算机应用技术",
-        year: "2015-2018",
-      },
-      {
-        school: "南昌大学",
-        degree: "本科 · 工商管理专业",
-        year: "2020-2023",
-      },
-    ],
-    contact: {
-      phoneLabel: "电话",
-      phone: "19318638996",
-      emailLabel: "邮箱",
-      email: "leaolly333@163.com",
-      note: "熟悉敏捷研发流程，擅长跨团队协作与复杂系统交付。",
-      workingStyleTitle: "工作方式",
-      workingStyleItems: [
-        "性能优化与稳定性保障",
-        "模块化与高复用组件沉淀",
-        "跨端适配与一致体验",
-        "文档化与敏捷协作",
-      ],
-    },
-    projectImpactLabel: "成果",
-    footer: "© 2026 李慧 · 前端开发工程师",
+    all: "全部案例",
+    vue: "Vue 业务系统",
+    react: "React 数据产品",
+    next: "Next 官网门户",
+    realtime: "实时可视化",
   },
   en: {
-    brandName: "Hui Li",
-    brandRole: "Frontend Engineer",
-    nav: {
-      about: "About",
-      skills: "Skills",
-      experience: "Experience",
-      projects: "Projects",
-      education: "Education",
-      contact: "Contact",
-    },
-    hero: {
-      label: "Resume Overview",
-      title: "Frontend Engineer",
-      lead:
-        "8 years of frontend experience across education, ecommerce, and O2O, with strengths in performance optimization, modular development, and cross-platform delivery.",
-      actions: {
-        primary: "View Projects",
-        secondary: "Contact",
-      },
-      badges: ["Vue / React", "Performance", "Engineering", "Cross-platform"],
-    },
-    profile: {
-      focusLabel: "Experience",
-      focusValue: "8 years",
-      locationLabel: "Target role",
-      locationValue: "Frontend Engineer",
-      availabilityLabel: "Age",
-      availabilityValue: "29",
-      languagesLabel: "Phone",
-      languagesValue: "19318638996",
-    },
-    status: {
-      title: "Focus Areas",
-      items: [
-        { label: "Performance", value: "First paint / Rendering" },
-        { label: "Modularity", value: "Component reuse" },
-        { label: "Cross-platform", value: "Web / Mini Programs" },
-      ],
-    },
-    sections: {
-      skills: {
-        eyebrow: "Capabilities",
-        title: "Professional skills and stack",
-        desc: "Covers frontend fundamentals, frameworks, engineering, and cross-platform delivery.",
-      },
-      experience: {
-        eyebrow: "Experience",
-        title: "Work experience",
-        desc: "Delivered architecture upgrades and performance optimization across multiple business lines.",
-      },
-      projects: {
-        eyebrow: "Projects",
-        title: "Key projects",
-        desc: "Education platforms, ecommerce systems, collaboration tools, and enterprise back office.",
-      },
-      education: {
-        eyebrow: "Education",
-        title: "Education",
-        desc: "Background in computer applications and business administration.",
-      },
-      contact: {
-        eyebrow: "Contact",
-        title: "Get in touch",
-        desc: "Open to frontend roles and project collaboration.",
-      },
-    },
-    projectMeta: {
-      roleLabel: "Role",
-      stackLabel: "Stack",
-      focusLabel: "Focus",
-    },
-    skills: [
-      {
-        title: "Frontend Core",
-        items: ["HTML5 / CSS3", "JavaScript", "ES6+", "TypeScript", "GitFlow"],
-      },
-      {
-        title: "Frameworks & UI",
-        items: ["Vue / Vuex / Pinia", "React / Redux", "Ant Design / Element UI", "Vant / Arco / MUI"],
-      },
-      {
-        title: "Engineering & Performance",
-        items: ["Webpack", "Vite", "Rollup", "CI/CD", "Performance", "Frontend Monitoring"],
-      },
-      {
-        title: "Cross-platform & Platform",
-        items: ["uni-app", "Taro", "Mini Programs", "Electron", "Node.js", "Docker"],
-      },
-    ],
-    experiences: [
-      {
-        title: "Frontend Engineer (Team Lead)",
-        company: "Shanghai Bowefeng Software Technology Co., Ltd.",
-        period: "2021.02-2025.09",
-        highlight:
-          "Led architecture upgrades and performance optimization for an education platform, improving maintainability and reducing CDN resource consumption by 70%.",
-      },
-      {
-        title: "Frontend Engineer",
-        company: "Shanghai Feirui Network Technology Co., Ltd.",
-        period: "2019.03-2021.01",
-        highlight:
-          "Owned end-to-end delivery and component library evolution, driving scaffolding and build optimization to raise delivery consistency.",
-      },
-      {
-        title: "Frontend Engineer",
-        company: "Blue Origin Enterprise Management (Shanghai) Co., Ltd.",
-        period: "2018.03-2019.03",
-        highlight:
-          "Delivered customized web projects and led core module implementation with strong cross-team communication.",
-      },
-    ],
-    projects: [
-      {
-        title: "Xuezhangmen Online School PC Web & App Mall",
-        year: "2021.02-2025.09",
-        role: "Frontend Engineer",
-        stack: "uni-app, Nuxt2, Vue2, Element UI, Node.js, Koa",
-        focus: "Education commerce, live streaming, payments",
-        highlights: [
-          "Delivered core modules for courses, membership, quizzes, and payments supporting massive concurrency.",
-          "Integrated WeChat/Alipay payments and JWT-based auth to improve transaction stability.",
-          "Built prerendering and caching to reduce SSR cold start by 84%.",
-        ],
-        impact: "Sustained growth in user engagement and paid conversion.",
-      },
-      {
-        title: "Xuezhangmen Admin Console",
-        year: "2021.02-2025.09",
-        role: "Frontend Engineer",
-        stack: "React 18, Redux Toolkit, Webpack 5, Ant Design, Echarts",
-        focus: "B-side system, configurable forms, performance",
-        highlights: [
-          "Extended dynamic form components for 15+ business scenarios.",
-          "Built reusable business components to shorten delivery cycles by ~30%.",
-          "Applied Web Worker and ResizeObserver to improve heavy-data UX.",
-        ],
-        impact: "First paint optimized to 1.8s.",
-      },
-      {
-        title: "Unified Authentication Center (UAC)",
-        year: "2022.03-2025.09",
-        role: "Frontend Engineer",
-        stack: "React, Umi Max, Ant Design, Tailwind CSS, Node.js",
-        focus: "Auth, scaffolding, code generation",
-        highlights: [
-          "Built a CLI with Commander/Inquirer for interactive project bootstrapping.",
-          "Introduced Swagger-based API codegen to shorten CRUD delivery.",
-          "Authored best-practice docs, reducing startup time to 2 hours.",
-        ],
-        impact: "Unified auth capabilities reused across business lines.",
-      },
-      {
-        title: "Bowefeng TMS System",
-        year: "2021.07-2025.09",
-        role: "Frontend Engineer",
-        stack: "React 18, TypeScript, RTK Query, Ant Design, Socket.IO, Yjs",
-        focus: "Collaboration, realtime editing, monitoring",
-        highlights: [
-          "Delivered core features for channels, Markdown editing, and message management.",
-          "Enabled multi-user realtime collaboration with Socket.IO + Yjs.",
-          "Integrated Performance API for logs and telemetry.",
-        ],
-        impact: "Improved collaboration efficiency and observability.",
-      },
-      {
-        title: "Yafeini Foreign Trade ERP",
-        year: "2019.03-2021.01",
-        role: "Frontend Engineer",
-        stack: "Vue 3, Element Plus, Pinia, Vite, WebSocket",
-        focus: "Complex business modules and performance",
-        highlights: [
-          "Applied virtual scrolling and chunked loading for 10k+ SKU rendering.",
-          "Built financial settlement center with real-time multi-currency conversion.",
-          "Established monitoring and analytics, improving incident response by 80%.",
-        ],
-        impact: "Platform response time improved by 30%.",
-      },
-    ],
-    education: [
-      {
-        school: "Jiangxi Water Conservancy Vocational College",
-        degree: "Associate · Computer Application Technology",
-        year: "2015-2018",
-      },
-      {
-        school: "Nanchang University",
-        degree: "Bachelor · Business Administration",
-        year: "2020-2023",
-      },
-    ],
-    contact: {
-      phoneLabel: "Phone",
-      phone: "19318638996",
-      emailLabel: "Email",
-      email: "leaolly333@163.com",
-      note: "Familiar with agile delivery and cross-team collaboration for complex systems.",
-      workingStyleTitle: "Working style",
-      workingStyleItems: [
-        "Performance and stability focused",
-        "Modular and reusable components",
-        "Cross-platform experience consistency",
-        "Documentation-first collaboration",
-      ],
-    },
-    projectImpactLabel: "Impact",
-    footer: "© 2026 Hui Li · Frontend Engineer",
+    all: "All Cases",
+    vue: "Vue Business",
+    react: "React Products",
+    next: "Next Portals",
+    realtime: "Realtime Visuals",
   },
-} as const;
+};
+
+function getProjectKey(project: ProjectItem): string {
+  return `${project.name}-${project.duration}`;
+}
+
+function getProjectTrackKeys(project: ProjectItem): ProjectTrackKey[] {
+  const stack = project.stack.toLowerCase();
+  const trackSet = new Set<ProjectTrackKey>();
+
+  if (stack.includes("vue")) {
+    trackSet.add("vue");
+  }
+
+  if (stack.includes("react")) {
+    trackSet.add("react");
+  }
+
+  if (stack.includes("next")) {
+    trackSet.add("next");
+  }
+
+  if (stack.includes("websocket") || stack.includes("echarts") || stack.includes("realtime")) {
+    trackSet.add("realtime");
+  }
+
+  if (trackSet.size === 0) {
+    trackSet.add("react");
+  }
+
+  return Array.from(trackSet);
+}
+
+function SectionHead({ eyebrow, title, description }: SectionCopy) {
+  return (
+    <div className="section-head">
+      <span>{eyebrow}</span>
+      <h2>{title}</h2>
+      <p>{description}</p>
+    </div>
+  );
+}
 
 export default function HomePage() {
   const [language, setLanguage] = useState<Language>("zh");
-  const copy = content[language];
+  const [showAllProjects, setShowAllProjects] = useState(false);
+  const [contentMap, setContentMap] = useState<Record<Language, SiteCopy>>(defaultContent);
+  const [activeProjectKey, setActiveProjectKey] = useState("");
+  const [activeTrack, setActiveTrack] = useState<ProjectTrackKey>("all");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadPortfolioData = async () => {
+      try {
+        const response = await fetch("/api/portfolio", { cache: "no-store" });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data = (await response.json()) as Partial<Record<Language, SiteCopy>>;
+
+        if (!cancelled && data.zh && data.en) {
+          setContentMap(data as Record<Language, SiteCopy>);
+        }
+      } catch {
+        // keep local seed as fallback
+      }
+    };
+
+    void loadPortfolioData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const content = useMemo(() => contentMap[language] ?? defaultContent[language], [contentMap, language]);
+  const frontendShowcase = content.frontendShowcase ?? defaultContent[language].frontendShowcase;
+  const hasFrontendNav = content.nav.some((item) => item.href.startsWith("#front"));
+  const navItems: Array<{ href: string; label: string }> = hasFrontendNav
+    ? content.nav.map((item) => ({ href: item.href, label: item.label }))
+    : [
+        ...content.nav.map((item) => ({ href: item.href, label: item.label })),
+        { href: "#frontend", label: language === "zh" ? "前端力" : "Frontend" },
+      ];
+
+  const trackLabels = projectTrackLabels[language];
+  const trackOptions = useMemo(() => {
+    const counters: Record<ProjectTrackKey, number> = {
+      all: content.projects.length,
+      vue: 0,
+      react: 0,
+      next: 0,
+      realtime: 0,
+    };
+
+    content.projects.forEach((project) => {
+      getProjectTrackKeys(project).forEach((track) => {
+        counters[track] += 1;
+      });
+    });
+
+    const baseKeys: ProjectTrackKey[] = ["all", "vue", "react", "next", "realtime"];
+
+    return baseKeys
+      .filter((key) => key === "all" || counters[key] > 0)
+      .map((key) => ({ key, label: trackLabels[key], count: counters[key] }));
+  }, [content.projects, trackLabels]);
+
+  const filteredProjects = useMemo(() => {
+    if (activeTrack === "all") {
+      return content.projects;
+    }
+
+    return content.projects.filter((project) => getProjectTrackKeys(project).includes(activeTrack));
+  }, [activeTrack, content.projects]);
+
+  const visibleProjects = showAllProjects ? filteredProjects : filteredProjects.slice(0, 3);
+  const hiddenProjectCount = Math.max(filteredProjects.length - 3, 0);
+  const showMoreLabel =
+    hiddenProjectCount > 0
+      ? `${content.projectToggle.showMore} (+${hiddenProjectCount} ${content.projectToggle.hiddenCountSuffix})`
+      : content.projectToggle.showMore;
+
+  useEffect(() => {
+    if (activeTrack !== "all" && !trackOptions.some((option) => option.key === activeTrack)) {
+      setActiveTrack("all");
+    }
+  }, [activeTrack, trackOptions]);
+
+  useEffect(() => {
+    const primaryProject = filteredProjects[0];
+
+    if (!primaryProject) {
+      setActiveProjectKey("");
+      return;
+    }
+
+    const firstKey = getProjectKey(primaryProject);
+
+    if (!filteredProjects.some((project) => getProjectKey(project) === activeProjectKey)) {
+      setActiveProjectKey(firstKey);
+    }
+  }, [activeProjectKey, filteredProjects]);
+
+  useEffect(() => {
+    if (filteredProjects.length <= 1) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setActiveProjectKey((current) => {
+        const index = filteredProjects.findIndex((project) => getProjectKey(project) === current);
+        const nextIndex = index >= 0 ? (index + 1) % filteredProjects.length : 0;
+
+        return getProjectKey(filteredProjects[nextIndex]);
+      });
+    }, 3000);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [filteredProjects]);
+
+  const handleProjectPointerMove = (event: MouseEvent<HTMLElement>) => {
+    const card = event.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const rotateX = ((y / rect.height) * 2 - 1) * -4;
+    const rotateY = ((x / rect.width) * 2 - 1) * 4;
+
+    card.style.setProperty("--mx", `${x}px`);
+    card.style.setProperty("--my", `${y}px`);
+    card.style.setProperty("--tiltX", `${rotateX.toFixed(2)}deg`);
+    card.style.setProperty("--tiltY", `${rotateY.toFixed(2)}deg`);
+  };
+
+  const handleProjectPointerLeave = (event: MouseEvent<HTMLElement>) => {
+    const card = event.currentTarget;
+    card.style.setProperty("--mx", "-200px");
+    card.style.setProperty("--my", "-200px");
+    card.style.setProperty("--tiltX", "0deg");
+    card.style.setProperty("--tiltY", "0deg");
+  };
 
   return (
     <>
-      <div className="bg-orb orb-1" />
-      <div className="bg-orb orb-2" />
+      <div className="ambient" aria-hidden="true">
+        <span className="ambient-orb ambient-orb--left" />
+        <span className="ambient-orb ambient-orb--right" />
+        <span className="ambient-grid" />
+      </div>
 
-      <header className="topbar">
-        <div className="brand">
-          <span className="brand-name">{copy.brandName}</span>
-          <span className="brand-role">{copy.brandRole}</span>
-        </div>
-        <nav className="top-nav">
-          <a href="#about">{copy.nav.about}</a>
-          <a href="#skills">{copy.nav.skills}</a>
-          <a href="#experience">{copy.nav.experience}</a>
-          <a href="#projects">{copy.nav.projects}</a>
-          <a href="#education">{copy.nav.education}</a>
-          <a href="#contact">{copy.nav.contact}</a>
-        </nav>
-        <div className="lang-switch">
-          <button
-            type="button"
-            className={language === "zh" ? "is-active" : ""}
-            onClick={() => setLanguage("zh")}
-          >
-            中文
-          </button>
-          <button
-            type="button"
-            className={language === "en" ? "is-active" : ""}
-            onClick={() => setLanguage("en")}
-          >
-            EN
-          </button>
+      <header className="site-header">
+        <div className="site-header-inner">
+          <div className="brand">
+            <strong>{content.brandName}</strong>
+            <span>{content.brandRole}</span>
+          </div>
+
+          <nav className="site-nav" aria-label="site navigation">
+            {navItems.map((item) => (
+              <a href={item.href} key={item.href}>
+                {item.label}
+              </a>
+            ))}
+          </nav>
+
+          <div className="lang-switch" role="group" aria-label="language switch">
+            <button
+              type="button"
+              onClick={() => setLanguage("zh")}
+              className={language === "zh" ? "is-active" : undefined}
+            >
+              中文
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage("en")}
+              className={language === "en" ? "is-active" : undefined}
+            >
+              EN
+            </button>
+          </div>
         </div>
       </header>
 
-      <main>
-        <section className="hero" id="about">
-          <div className="hero-left">
-            <span className="hero-label">{copy.hero.label}</span>
-            <h1 className="hero-title">{copy.hero.title}</h1>
-            <p className="hero-lead">{copy.hero.lead}</p>
+      <main className="page-shell">
+        <section className="hero panel" id="about">
+          <div className="hero-main">
+            <span className="hero-eyebrow">{content.hero.eyebrow}</span>
+            <h1>{content.hero.title}</h1>
+            <p>{content.hero.lead}</p>
+
             <div className="hero-actions">
-              <a className="button primary" href="#projects">
-                {copy.hero.actions.primary}
+              <a href="#projects" className="btn btn-primary">
+                {content.hero.primaryAction}
               </a>
-              <a className="button ghost" href="#contact">
-                {copy.hero.actions.secondary}
+              <a href="#contact" className="btn btn-ghost">
+                {content.hero.secondaryAction}
               </a>
             </div>
-            <div className="hero-badges">
-              {copy.hero.badges.map((badge) => (
-                <span className="badge" key={badge}>
-                  {badge}
-                </span>
+
+            <div className="badge-row">
+              {content.hero.badges.map((badge) => (
+                <span key={badge}>{badge}</span>
               ))}
             </div>
           </div>
-          <div className="hero-right">
-            <div className="profile-card">
-              <div className="profile-row">
-                <span className="profile-label">{copy.profile.focusLabel}</span>
-                <strong>{copy.profile.focusValue}</strong>
-              </div>
-              <div className="profile-row">
-                <span className="profile-label">{copy.profile.locationLabel}</span>
-                <strong>{copy.profile.locationValue}</strong>
-              </div>
-              <div className="profile-row">
-                <span className="profile-label">{copy.profile.availabilityLabel}</span>
-                <strong>{copy.profile.availabilityValue}</strong>
-              </div>
-              <div className="profile-row">
-                <span className="profile-label">{copy.profile.languagesLabel}</span>
-                <strong>{copy.profile.languagesValue}</strong>
-              </div>
-            </div>
-            <div className="status-card">
-              <div className="status-title">{copy.status.title}</div>
-              <ul className="status-list">
-                {copy.status.items.map((item) => (
-                  <li className="status-item" key={item.label}>
-                    <span>{item.label}</span>
-                    <strong>{item.value}</strong>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
 
-        <section className="section" id="skills">
-          <div className="container">
-            <div className="section-head">
-              <span className="eyebrow">{copy.sections.skills.eyebrow}</span>
-              <h2>{copy.sections.skills.title}</h2>
-              <p className="section-desc">{copy.sections.skills.desc}</p>
-            </div>
-            <div className="skills-grid">
-              {copy.skills.map((skill) => (
-                <article className="skill-card" key={skill.title}>
-                  <h3>{skill.title}</h3>
-                  <div className="tag-list">
-                    {skill.items.map((item) => (
-                      <span className="tag-chip" key={item}>
-                        {item}
-                      </span>
-                    ))}
-                  </div>
+          <aside className="hero-side panel-soft">
+            <h3>{content.hero.sideTitle}</h3>
+            <p>{content.hero.sideDescription}</p>
+
+            <div className="metric-grid">
+              {content.metrics.map((metric) => (
+                <article className="metric-card" key={metric.label}>
+                  <strong>{metric.value}</strong>
+                  <span>{metric.label}</span>
                 </article>
               ))}
             </div>
+          </aside>
+        </section>
+
+        <section className="section insight-section" id="insight">
+          <SectionHead
+            eyebrow={content.sections.insight.eyebrow}
+            title={content.sections.insight.title}
+            description={content.sections.insight.description}
+          />
+          <div className="insight-layout">
+            <article className="insight-main panel">
+              <p>{content.insight.statement}</p>
+            </article>
+            <article className="insight-card panel-soft">
+              <h3>{content.insight.nowTitle}</h3>
+              <ul>
+                {content.insight.nowItems.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </article>
+            <article className="insight-card panel-soft">
+              <h3>{content.insight.principleTitle}</h3>
+              <ul>
+                {content.insight.principleItems.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section className="section" id="achievement">
+          <SectionHead
+            eyebrow={content.sections.achievement.eyebrow}
+            title={content.sections.achievement.title}
+            description={content.sections.achievement.description}
+          />
+          <div className="achievement-grid">
+            {content.achievements.map((achievement) => (
+              <article className="achievement-card panel" key={achievement.label}>
+                <strong>{achievement.value}</strong>
+                <h3>{achievement.label}</h3>
+                <p>{achievement.detail}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="section" id="capability">
+          <SectionHead
+            eyebrow={content.sections.capability.eyebrow}
+            title={content.sections.capability.title}
+            description={content.sections.capability.description}
+          />
+          <div className="capability-grid">
+            {content.capabilities.map((capability) => (
+              <article className="capability-card panel" key={capability.title}>
+                <h3>{capability.title}</h3>
+                <p>{capability.summary}</p>
+                <div className="tag-list">
+                  {capability.items.map((item) => (
+                    <span key={item}>{item}</span>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="section" id="tooling">
+          <SectionHead
+            eyebrow={content.sections.tooling.eyebrow}
+            title={content.sections.tooling.title}
+            description={content.sections.tooling.description}
+          />
+          <div className="tooling-grid">
+            {content.tooling.map((group) => (
+              <article className="tooling-card panel-soft" key={group.title}>
+                <h3>{group.title}</h3>
+                <div className="tooling-list">
+                  {group.items.map((item) => (
+                    <span key={item}>{item}</span>
+                  ))}
+                </div>
+              </article>
+            ))}
           </div>
         </section>
 
         <section className="section" id="experience">
-          <div className="container">
-            <div className="section-head">
-              <span className="eyebrow">{copy.sections.experience.eyebrow}</span>
-              <h2>{copy.sections.experience.title}</h2>
-              <p className="section-desc">{copy.sections.experience.desc}</p>
-            </div>
-            <div className="experience-list">
-              {copy.experiences.map((exp) => (
-                <article className="experience-item" key={exp.title}>
-                  <h3>{exp.title}</h3>
-                  <div className="exp-meta">
-                    <span>{exp.company}</span>
-                    <span>{exp.period}</span>
+          <SectionHead
+            eyebrow={content.sections.experience.eyebrow}
+            title={content.sections.experience.title}
+            description={content.sections.experience.description}
+          />
+          <div className="timeline">
+            {content.experiences.map((experience, index) => (
+              <article className="timeline-item panel" key={`${experience.company}-${experience.period}`}>
+                <span className="timeline-index">{String(index + 1).padStart(2, "0")}</span>
+                <div className="timeline-main">
+                  <h3>{experience.role}</h3>
+                  <div className="timeline-meta">
+                    <span>{experience.company}</span>
+                    <span>{experience.period}</span>
                   </div>
-                  <p>{exp.highlight}</p>
-                </article>
-              ))}
-            </div>
+                  <ul>
+                    {experience.highlights.map((highlight) => (
+                      <li key={highlight}>{highlight}</li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
+            ))}
           </div>
         </section>
 
         <section className="section" id="projects">
-          <div className="container">
-            <div className="section-head">
-              <span className="eyebrow">{copy.sections.projects.eyebrow}</span>
-              <h2>{copy.sections.projects.title}</h2>
-              <p className="section-desc">{copy.sections.projects.desc}</p>
-            </div>
-            <div className="project-grid">
-              {copy.projects.map((project) => (
-                <article className="project-card" key={project.title}>
-                  <div className="project-head">
-                    <span className="project-title">{project.title}</span>
-                    <span className="project-year">{project.year}</span>
+          <SectionHead
+            eyebrow={content.sections.projects.eyebrow}
+            title={content.sections.projects.title}
+            description={content.sections.projects.description}
+          />
+          <div className="project-tracks" role="tablist" aria-label={language === "zh" ? "项目分类" : "Project tracks"}>
+            {trackOptions.map((option) => {
+              const selected = activeTrack === option.key;
+
+              return (
+                <button
+                  type="button"
+                  role="tab"
+                  key={option.key}
+                  className={selected ? "is-active" : undefined}
+                  aria-selected={selected}
+                  onClick={() => {
+                    setActiveTrack(option.key);
+                    setShowAllProjects(false);
+                  }}
+                >
+                  <span>{option.label}</span>
+                  <em>{option.count}</em>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="project-timeline" aria-hidden="true">
+            {filteredProjects.map((project, index) => {
+              const key = getProjectKey(project);
+              const active = key === activeProjectKey;
+
+              return (
+                <span key={key} className={active ? "is-active" : undefined}>
+                  <i>{String(index + 1).padStart(2, "0")}</i>
+                  <small>{project.duration}</small>
+                </span>
+              );
+            })}
+          </div>
+
+          <div className="project-toolbar">
+            <span>{showAllProjects ? content.projectToggle.expandedHint : content.projectToggle.collapsedHint}</span>
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => setShowAllProjects((prev) => !prev)}
+              aria-expanded={showAllProjects}
+              aria-controls="project-grid"
+            >
+              {showAllProjects ? content.projectToggle.showLess : showMoreLabel}
+            </button>
+          </div>
+          <div className="project-grid" id="project-grid">
+            {visibleProjects.map((project, index) => {
+              const motionStyle = { "--delay": `${index * 90}ms` } as CSSProperties;
+              const projectKey = getProjectKey(project);
+              const projectTracks = getProjectTrackKeys(project);
+              const isActiveProject = projectKey === activeProjectKey;
+
+              return (
+                <article
+                  className={`project-card panel motion-project${isActiveProject ? " is-active" : ""}`}
+                  key={projectKey}
+                  style={motionStyle}
+                  onMouseMove={handleProjectPointerMove}
+                  onMouseLeave={handleProjectPointerLeave}
+                  onMouseEnter={() => setActiveProjectKey(projectKey)}
+                >
+                  <div className="project-motion-bar" aria-hidden="true">
+                    <span />
                   </div>
+                  <div className="project-header">
+                    <h3>{project.name}</h3>
+                    <span>{project.duration}</span>
+                  </div>
+
+                  <div className="project-track-tags" aria-label={language === "zh" ? "技术方向" : "Tech tracks"}>
+                    {projectTracks.map((track) => (
+                      <span key={`${projectKey}-${track}`}>{trackLabels[track]}</span>
+                    ))}
+                  </div>
+
                   <div className="project-meta">
                     <div>
-                      <span className="meta-label">{copy.projectMeta.roleLabel}</span>
-                      <div>{project.role}</div>
+                      <small>{content.projectMeta.roleLabel}</small>
+                      <p>{project.role}</p>
                     </div>
                     <div>
-                      <span className="meta-label">{copy.projectMeta.stackLabel}</span>
-                      <div>{project.stack}</div>
+                      <small>{content.projectMeta.scopeLabel}</small>
+                      <p>{project.scope}</p>
                     </div>
                     <div>
-                      <span className="meta-label">{copy.projectMeta.focusLabel}</span>
-                      <div>{project.focus}</div>
+                      <small>{content.projectMeta.stackLabel}</small>
+                      <p>{project.stack}</p>
                     </div>
                   </div>
-                  <ul className="project-list">
-                    {project.highlights.map((item) => (
-                      <li key={item}>{item}</li>
+
+                  <div className="project-story">
+                    <p>
+                      <span>{content.projectMeta.challengeLabel}</span>
+                      {project.challenge}
+                    </p>
+                    <p>
+                      <span>{content.projectMeta.strategyLabel}</span>
+                      {project.strategy}
+                    </p>
+                  </div>
+
+                  <ul>
+                    {project.highlights.map((highlight) => (
+                      <li key={highlight}>{highlight}</li>
                     ))}
                   </ul>
-                  <div className="project-impact">
-                    <span className="impact-tag">{copy.projectImpactLabel}</span>
-                    <span>{project.impact}</span>
+
+                  <div className="impact-tags" aria-label={content.projectMeta.impactLabel}>
+                    {project.impact.map((item) => (
+                      <span key={item}>{item}</span>
+                    ))}
+                  </div>
+
+                  <div className="project-outcome">
+                    <strong>{content.projectMeta.outcomeLabel}</strong>
+                    <span>{project.outcome}</span>
                   </div>
                 </article>
-              ))}
-            </div>
+              );
+            })}
           </div>
         </section>
 
-        <section className="section" id="education">
-          <div className="container">
-            <div className="section-head">
-              <span className="eyebrow">{copy.sections.education.eyebrow}</span>
-              <h2>{copy.sections.education.title}</h2>
-              <p className="section-desc">{copy.sections.education.desc}</p>
-            </div>
-            <div className="education-list">
-              {copy.education.map((item) => (
-                <div className="education-item" key={item.school}>
-                  <div>
-                    <strong>{item.school}</strong>
-                    <span>{item.degree}</span>
+        <section className="section frontend-section" id="frontend">
+          <SectionHead
+            eyebrow={frontendShowcase.eyebrow}
+            title={frontendShowcase.title}
+            description={frontendShowcase.description}
+          />
+          <div className="frontend-grid">
+            {frontendShowcase.pillars.map((pillar, index) => {
+              const motionStyle = { "--delay": `${index * 80}ms` } as CSSProperties;
+
+              return (
+                <article className="frontend-card panel motion-project" key={pillar.title} style={motionStyle}>
+                  <div className="frontend-card-head">
+                    <span>{pillar.metric}</span>
+                    <h3>{pillar.title}</h3>
                   </div>
-                  <span>{item.year}</span>
-                </div>
+                  <p>{pillar.detail}</p>
+                  <ul>
+                    {pillar.bullets.map((bullet) => (
+                      <li key={bullet}>{bullet}</li>
+                    ))}
+                  </ul>
+                </article>
+              );
+            })}
+          </div>
+
+          <article className="frontend-lab panel-soft">
+            <div className="frontend-lab-head">
+              <h3>{frontendShowcase.labTitle}</h3>
+              <p>{frontendShowcase.labDescription}</p>
+            </div>
+
+            <div className="frontend-lab-grid">
+              {frontendShowcase.labMetrics.map((metric) => {
+                const meterStyle = { "--meter": metric.progress } as CSSProperties;
+
+                return (
+                  <article className="frontend-lab-item" key={`${metric.label}-${metric.value}`} style={meterStyle}>
+                    <span>{metric.label}</span>
+                    <strong>{metric.value}</strong>
+                    <p>{metric.detail}</p>
+                    <i className="frontend-meter" aria-hidden="true" />
+                  </article>
+                );
+              })}
+            </div>
+
+            <div className="frontend-gates" aria-label={frontendShowcase.gatesLabel}>
+              {frontendShowcase.qualityGates.map((gate) => (
+                <span key={gate}>{gate}</span>
               ))}
             </div>
+          </article>
+        </section>
+
+        <section className="section" id="process">
+          <SectionHead
+            eyebrow={content.sections.process.eyebrow}
+            title={content.sections.process.title}
+            description={content.sections.process.description}
+          />
+          <div className="process-grid">
+            {content.process.map((step) => (
+              <article className="process-card panel-soft" key={step.title}>
+                <h3>{step.title}</h3>
+                <p>{step.description}</p>
+              </article>
+            ))}
           </div>
         </section>
 
-        <section className="section" id="contact">
-          <div className="container">
-            <div className="section-head">
-              <span className="eyebrow">{copy.sections.contact.eyebrow}</span>
-              <h2>{copy.sections.contact.title}</h2>
-              <p className="section-desc">{copy.sections.contact.desc}</p>
-            </div>
-            <div className="profile-layout">
-              <div className="contact-card">
-                <div>
-                  <span className="label">{copy.contact.phoneLabel}</span>
-                  <strong>{copy.contact.phone}</strong>
-                </div>
-                <div>
-                  <span className="label">{copy.contact.emailLabel}</span>
-                  <strong>{copy.contact.email}</strong>
-                </div>
-                <p className="contact-note">{copy.contact.note}</p>
+        <section className="section contact" id="contact">
+          <SectionHead
+            eyebrow={content.sections.contact.eyebrow}
+            title={content.sections.contact.title}
+            description={content.sections.contact.description}
+          />
+          <div className="contact-layout">
+            <article className="contact-card panel">
+              <div>
+                <span>{content.contact.phoneLabel}</span>
+                <a href={`tel:${content.contact.phone.replace(/\s+/g, "")}`}>{content.contact.phone}</a>
               </div>
-              <div className="panel">
-                <h3>{copy.contact.workingStyleTitle}</h3>
-                <ul className="checklist">
-                  {copy.contact.workingStyleItems.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
+              <div>
+                <span>{content.contact.emailLabel}</span>
+                <a href={`mailto:${content.contact.email}`}>{content.contact.email}</a>
               </div>
-            </div>
+              <div>
+                <span>{content.contact.locationLabel}</span>
+                <strong>{content.contact.location}</strong>
+              </div>
+              <div>
+                <span>{content.contact.availabilityLabel}</span>
+                <strong>{content.contact.availability}</strong>
+              </div>
+              <div>
+                <span>{content.contact.responseLabel}</span>
+                <strong>{content.contact.response}</strong>
+              </div>
+            </article>
+
+            <article className="contact-card panel-soft">
+              <h3>{content.contact.collaborationTitle}</h3>
+              <ul>
+                {content.contact.collaborationItems.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </article>
           </div>
         </section>
       </main>
 
-      <footer className="site-footer">{copy.footer}</footer>
+      <footer className="site-footer">{content.footer}</footer>
     </>
   );
 }
